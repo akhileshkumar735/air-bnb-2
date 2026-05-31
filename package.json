@@ -8,6 +8,7 @@
   "main": "app.js",
  "scripts": {
   "start": "node app.js",
+  "build": "cd frontend && npm install && npm run build",
   "dev": "nodemon app.js",
   "test": "jest",
   "seed": "node seed.js"
