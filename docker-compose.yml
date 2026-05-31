@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Service
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - antigravity_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Caching Service
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+    networks:
+      - antigravity_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Node/Express Backend API Service
+  backend:
+    build: .
+    container_name: backend_api
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - ATLASDB_URL=mongodb://mongodb:27017/wonderlust
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=antigravity_secret_access_key_123
+      - JWT_REFRESH_SECRET=antigravity_secret_refresh_key_123
+      - NODE_ENV=production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - antigravity_network
+
+  # 4. React Frontend Web Client Service
+  frontend:
+    build: ./frontend
+    container_name: frontend_client
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - antigravity_network
+
+volumes:
+  mongodb_data:
+
+networks:
+  antigravity_network:
+    driver: bridge

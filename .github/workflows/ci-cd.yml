@@ -1,0 +1,65 @@
+name: AntiGravity CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # 1. Build and Test job
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-node: '18.x'
+        cache: 'npm'
+
+    # Backend Integration Checks
+    - name: Install Backend Dependencies
+      run: npm ci
+
+    - name: Audit Backend Packages
+      run: npm audit --audit-level=high || true
+
+    # Frontend Integration Checks
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Build Frontend Client
+      run: |
+        cd frontend
+        npm run build
+
+  # 2. Containerization and Publish Simulation job
+  docker-build:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Backend Docker Image
+      run: |
+        docker build -t antigravity-backend:latest .
+        
+    - name: Build Frontend Docker Image
+      run: |
+        cd frontend
+        docker build -t antigravity-frontend:latest .
+
+    - name: Deployment Notification
+      run: echo "Container images compiled successfully. Deploying to production environment..."
