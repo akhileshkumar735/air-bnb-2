@@ -4,13 +4,18 @@ import { useAuth } from "../context/AuthContext";
 import { useTax } from "../context/TaxContext";
 import RazorpayModal from "../components/RazorpayModal";
 import CancelBookingModal from "../components/CancelBookingModal";
+import ListingFormModal from "../components/ListingFormModal";
 import { 
   Star, MapPin, Calendar, Users, ArrowLeft, Send, ShieldAlert, 
-  Wifi, Car, Tv, Wind, ShieldCheck, Flame, Compass, Coffee, CheckCircle 
+  Wifi, Car, Tv, Wind, ShieldCheck, Flame, Compass, Coffee, CheckCircle,
+  Edit, Trash2, Settings
 } from "lucide-react";
+
+import { useToast } from "../context/ToastContext";
 
 export default function ListingDetail({ listingId, onBack }) {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { showTax } = useTax();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,6 +39,42 @@ export default function ListingDetail({ listingId, onBack }) {
   const [comment, setComment] = useState("");
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewError, setReviewError] = useState("");
+
+  // Host Owner Actions State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [hostActionLoading, setHostActionLoading] = useState(false);
+  const [hostActionError, setHostActionError] = useState("");
+
+  const isOwner = user && listing && (
+    user.id === listing.owner?._id || 
+    user._id === listing.owner?._id || 
+    user.id === listing.owner?.id || 
+    user._id === listing.owner?.id || 
+    user.id === listing.owner || 
+    user._id === listing.owner
+  );
+
+  const handleDeleteListing = async () => {
+    setHostActionLoading(true);
+    setHostActionError("");
+    try {
+      await axios.delete(`/api/listings/${listingId}`);
+      setIsDeleteConfirmOpen(false);
+      showToast("Property deleted successfully!", "success");
+      onBack();
+    } catch (err) {
+      console.error("Failed to delete listing:", err);
+      setHostActionError(err.response?.data?.message || "Failed to delete property listing.");
+    } finally {
+      setHostActionLoading(false);
+    }
+  };
+
+  const handleEditSuccess = (updatedListing) => {
+    setListing(updatedListing);
+    setIsEditModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchListingData = async () => {
@@ -473,7 +514,42 @@ export default function ListingDetail({ listingId, onBack }) {
               </div>
             </div>
 
-            {activeBooking ? (
+            {isOwner ? (
+              <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl text-center space-y-4 animate-fade-in">
+                <div className="flex flex-col items-center">
+                  <span className="bg-brand/10 text-brand border border-brand/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider mb-2 flex items-center">
+                    <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Host Mode
+                  </span>
+                  <p className="font-extrabold text-xs text-white uppercase tracking-wider">Host Control Panel</p>
+                  <p className="text-[9px] text-slate-400 mt-1 uppercase tracking-widest">You own this listing</p>
+                </div>
+                
+                {hostActionError && (
+                  <div className="p-2.5 bg-red-950/25 border border-red-900/30 text-red-400 rounded-xl text-[10px] font-bold">
+                    {hostActionError}
+                  </div>
+                )}
+                
+                <div className="space-y-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-2"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                    <span>Edit Details</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteConfirmOpen(true)}
+                    className="w-full py-3 bg-gradient-to-r from-red-650 to-rose-700 hover:from-red-750 hover:to-rose-800 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-2 shadow-lg shadow-red-950/20"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete Listing</span>
+                  </button>
+                </div>
+              </div>
+            ) : activeBooking ? (
               <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center space-y-4 animate-fade-in">
                 <div className="flex flex-col items-center">
                   <span className="bg-emerald-500/10 text-emerald-450 border border-emerald-500/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider mb-2">
@@ -715,6 +791,63 @@ export default function ListingDetail({ listingId, onBack }) {
         listingTitle={listing.title}
         onSuccess={handlePaymentSuccess}
       />
+
+      {/* Cancel Confirmation Modal */}
+      <CancelBookingModal
+        isOpen={cancelModalOpen}
+        onClose={() => setCancelModalOpen(false)}
+        booking={activeBooking}
+        onConfirm={handleCancelConfirm}
+      />
+
+      {/* Listing Create/Edit Form Modal */}
+      {listing && (
+        <ListingFormModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          listing={listing}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in text-left">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl rounded-3xl p-6 sm:p-8 max-w-md w-full animate-scale-up">
+            <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-800/50 pb-3">
+              Delete Property?
+            </h3>
+            <p className="text-xs text-slate-650 dark:text-slate-400 font-semibold leading-relaxed mt-4">
+              Are you sure you want to delete <span className="font-extrabold text-slate-850 dark:text-white">"{listing.title}"</span>? 
+            </p>
+            <div className="mt-3 p-3 bg-rose-50 dark:bg-rose-955/10 border border-rose-250 dark:border-rose-900/30 text-rose-700 dark:text-rose-400 rounded-2xl text-[10px] font-bold leading-normal flex items-start">
+              <span className="mr-2">⚠️</span>
+              <span>Warning: This action is permanent. All reservations and reviews associated with this listing will be deleted immediately.</span>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setIsDeleteConfirmOpen(false)}
+                disabled={hostActionLoading}
+                className="px-4 py-2.5 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-xl text-[10px] font-black uppercase tracking-wider transition disabled:opacity-50 cursor-pointer"
+              >
+                Keep Listing
+              </button>
+              <button
+                onClick={handleDeleteListing}
+                disabled={hostActionLoading}
+                className="px-5 py-2.5 bg-gradient-to-r from-red-650 to-rose-700 hover:from-red-750 hover:to-rose-800 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition active:scale-95 disabled:opacity-50 flex items-center justify-center min-w-[100px] cursor-pointer shadow-lg shadow-red-950/20"
+              >
+                {hostActionLoading ? (
+                  <div className="h-3 w-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  "Confirm Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

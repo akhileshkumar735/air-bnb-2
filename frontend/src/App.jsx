@@ -132,13 +132,17 @@ function AppContent() {
   );
 }
 
+import { ToastProvider } from "./context/ToastContext";
+
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <WishlistProvider>
           <TaxProvider>
-            <AppContent />
+            <ToastProvider>
+              <AppContent />
+            </ToastProvider>
           </TaxProvider>
         </WishlistProvider>
       </AuthProvider>
