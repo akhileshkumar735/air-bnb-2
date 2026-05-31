@@ -5,11 +5,13 @@
   "name": "pnb-project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest",
-    "seed": "node seed.js"
-  },
+  "main": "app.js",
+ "scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "test": "jest",
+  "seed": "node seed.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
