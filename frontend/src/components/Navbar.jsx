@@ -82,16 +82,18 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
           <div className="flex items-center space-x-2 sm:space-x-3">
             
             {/* Tax Switch Toggle */}
-            <div className="flex items-center space-x-2 mr-1 sm:mr-2">
-              <span className="hidden lg:inline text-[10px] font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider">Display total after taxes</span>
-              <span className="hidden sm:inline lg:hidden text-[10px] font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider">Taxes</span>
+            <div className="flex items-center space-x-2.5 border border-slate-200/60 dark:border-slate-800/80 px-3 py-1.5 rounded-full bg-slate-50/50 dark:bg-slate-900/40 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-all duration-300 mr-1 sm:mr-2">
+              <span className="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-350 tracking-wider uppercase">
+                <span className="hidden sm:inline">Display total after taxes</span>
+                <span className="hidden min-[380px]:inline sm:hidden">Taxes</span>
+              </span>
               <button 
                 onClick={toggleShowTax}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${showTax ? 'bg-brand' : 'bg-slate-200 dark:bg-slate-700'}`}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ring-offset-white dark:ring-offset-slate-900 focus:ring-2 focus:ring-brand/50 ${showTax ? 'bg-brand' : 'bg-slate-300 dark:bg-slate-600'}`}
                 aria-label="Toggle Tax Display"
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${showTax ? 'translate-x-5' : 'translate-x-0'}`}
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${showTax ? 'translate-x-4' : 'translate-x-0'}`}
                 />
               </button>
             </div>

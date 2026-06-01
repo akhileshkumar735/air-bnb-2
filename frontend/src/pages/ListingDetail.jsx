@@ -514,27 +514,26 @@ export default function ListingDetail({ listingId, onBack }) {
               </div>
             </div>
 
-            {isOwner ? (
-              <div className="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl text-center space-y-4 animate-fade-in">
-                <div className="flex flex-col items-center">
-                  <span className="bg-brand/10 text-brand border border-brand/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider mb-2 flex items-center">
+            {isOwner && (
+              <div className="bg-slate-950/40 border border-slate-200/20 dark:border-slate-800/40 p-4 rounded-2xl text-center space-y-3.5 animate-fade-in mb-3">
+                <div className="flex items-center justify-between">
+                  <span className="bg-brand/10 text-brand border border-brand/20 px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center">
                     <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Host Mode
                   </span>
-                  <p className="font-extrabold text-xs text-white uppercase tracking-wider">Host Control Panel</p>
-                  <p className="text-[9px] text-slate-400 mt-1 uppercase tracking-widest">You own this listing</p>
+                  <span className="text-[9px] text-slate-450 dark:text-slate-500 font-bold uppercase tracking-wider">You own this listing</span>
                 </div>
                 
                 {hostActionError && (
-                  <div className="p-2.5 bg-red-950/25 border border-red-900/30 text-red-400 rounded-xl text-[10px] font-bold">
+                  <div className="p-2.5 bg-red-955/25 border border-red-900/30 text-red-400 rounded-xl text-[10px] font-bold">
                     {hostActionError}
                   </div>
                 )}
                 
-                <div className="space-y-2.5 pt-2">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setIsEditModalOpen(true)}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-2"
+                    className="py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-[10px] uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-1.5"
                   >
                     <Edit className="h-3.5 w-3.5" />
                     <span>Edit Details</span>
@@ -542,14 +541,16 @@ export default function ListingDetail({ listingId, onBack }) {
                   <button
                     type="button"
                     onClick={() => setIsDeleteConfirmOpen(true)}
-                    className="w-full py-3 bg-gradient-to-r from-red-650 to-rose-700 hover:from-red-750 hover:to-rose-800 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-2 shadow-lg shadow-red-950/20"
+                    className="py-2.5 bg-gradient-to-r from-red-650 to-rose-700 hover:from-red-700 hover:to-rose-850 text-white font-extrabold rounded-xl text-[10px] uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-1.5"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     <span>Delete Listing</span>
                   </button>
                 </div>
               </div>
-            ) : activeBooking ? (
+            )}
+
+            {activeBooking ? (
               <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center space-y-4 animate-fade-in">
                 <div className="flex flex-col items-center">
                   <span className="bg-emerald-500/10 text-emerald-450 border border-emerald-500/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider mb-2">
@@ -573,7 +574,7 @@ export default function ListingDetail({ listingId, onBack }) {
                     <span className="text-brand font-extrabold">&#8377;{activeBooking.totalPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between font-bold">
-                    <span className="text-slate-450 uppercase text-[9px] tracking-wider">Status</span>
+                    <span className="text-slate-455 uppercase text-[9px] tracking-wider">Status</span>
                     <span className="text-emerald-450 font-black uppercase text-[10px] tracking-wide">{activeBooking.paymentStatus === 'paid' ? '✓ Paid' : 'Pending'}</span>
                   </div>
                 </div>
@@ -633,12 +634,12 @@ export default function ListingDetail({ listingId, onBack }) {
 
                 {/* Price Calculations breakdown list */}
                 {pricing && (
-                  <div className="space-y-3.5 text-xs text-slate-600 dark:text-slate-350 border-t border-slate-200/50 dark:border-slate-800/40 pt-4 animate-fade-in">
+                  <div className="space-y-3.5 text-xs text-slate-650 dark:text-slate-350 border-t border-slate-200/50 dark:border-slate-800/40 pt-4 animate-fade-in">
                     <div className="flex justify-between font-medium">
                       <span>&#8377;{currentPrice.toLocaleString()} x {pricing.nights} nights</span>
                       <span className="font-bold text-slate-900 dark:text-slate-200">&#8377;{pricing.baseTotal.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-[11px] text-slate-450 dark:text-slate-550 font-semibold uppercase tracking-wider">
+                    <div className="flex justify-between text-[11px] text-slate-450 dark:text-slate-555 font-semibold uppercase tracking-wider">
                       <span>Weekend surcharge (15% Fri/Sat)</span>
                       <span>Included</span>
                     </div>
@@ -659,7 +660,7 @@ export default function ListingDetail({ listingId, onBack }) {
                 )}
 
                 {bookingError && (
-                  <div className="flex items-center text-xs text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-3.5 rounded-2xl border border-red-100 dark:border-red-900">
+                  <div className="flex items-center text-xs text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-955/20 p-3.5 rounded-2xl border border-red-100 dark:border-red-900">
                     <ShieldAlert className="h-4 w-4 mr-2 shrink-0" />
                     <span className="leading-tight font-bold">{bookingError}</span>
                   </div>
