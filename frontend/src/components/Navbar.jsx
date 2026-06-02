@@ -47,7 +47,7 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
               <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-tr from-brand to-indigo-600 opacity-30 blur group-hover:opacity-60 transition duration-300"></div>
             </div>
             <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-brand to-indigo-600 dark:from-white dark:to-indigo-300 bg-clip-text text-transparent transition">
-              AntiGravity
+              Wonderlust
             </span>
           </div>
 

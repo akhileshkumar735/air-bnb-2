@@ -29,7 +29,7 @@ export default function Hero({ onSearch }) {
             Next-Gen Luxury Rentals
           </span>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-md leading-tight">
-            Experience <span className="bg-gradient-to-r from-brand via-pink-400 to-indigo-400 bg-clip-text text-transparent">AntiGravity</span> Stays
+            Experience <span className="bg-gradient-to-r from-brand via-pink-400 to-indigo-400 bg-clip-text text-transparent">Wonderlust</span> Stays
           </h1>
           <p className="text-sm sm:text-base md:text-lg drop-shadow-sm text-slate-200/90 max-w-xl mx-auto font-medium tracking-wide">
             Discover handpicked gravity-defying architecture, floating pools, and luxury spaces across the cosmos.

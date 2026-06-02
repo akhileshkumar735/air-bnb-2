@@ -47,7 +47,9 @@ export default function UserDashboard({ onSelectListing }) {
   // Filter bookings by date and status
   const filteredBookings = bookings.filter(b => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const checkInDate = new Date(b.checkIn);
+    checkInDate.setHours(0, 0, 0, 0);
     
     if (b.status === "cancelled") {
       return activeTab === "cancelled";

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useTax } from "../context/TaxContext";
-import RazorpayModal from "../components/RazorpayModal";
 import CancelBookingModal from "../components/CancelBookingModal";
 import ListingFormModal from "../components/ListingFormModal";
 import { 
@@ -20,7 +19,6 @@ export default function ListingDetail({ listingId, onBack }) {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookedDates, setBookedDates] = useState([]);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   
   // Bookings tracking states
   const [userBookings, setUserBookings] = useState([]);
@@ -75,6 +73,16 @@ export default function ListingDetail({ listingId, onBack }) {
     setListing(updatedListing);
     setIsEditModalOpen(false);
   };
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchListingData = async () => {
@@ -257,7 +265,7 @@ export default function ListingDetail({ listingId, onBack }) {
     b.status === "confirmed"
   );
 
-  const handleBook = (e) => {
+  const handleBook = async (e) => {
     e.preventDefault();
     if (!user) {
       alert("Please log in to book properties!");
@@ -266,32 +274,104 @@ export default function ListingDetail({ listingId, onBack }) {
     if (!pricing) return;
     setBookingError("");
     setBookingSuccess(false);
-    
-    // Open Razorpay Checkout Modal
-    setShowPaymentModal(true);
+    setBookingLoading(true);
+
+    try {
+      // 1. Call backend to create Razorpay Order & temp booking
+      const res = await axios.post("/api/payments/order", {
+        listingId: listing._id,
+        checkIn,
+        checkOut
+      });
+
+      const { order, keyId, prefill } = res.data;
+
+      // 2. Open official Razorpay Checkout Popup
+      const options = {
+        key: keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "AntiGravity Stays",
+        description: `Booking for ${listing.title}`,
+        image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=100",
+        order_id: order.id,
+        handler: async function (response) {
+          // Triggered on payment success
+          await handlePaymentSuccess(response);
+        },
+        prefill: {
+          name: prefill.name,
+          email: prefill.email,
+          contact: ""
+        },
+        theme: {
+          color: "#ff385c" // AntiGravity brand color
+        },
+        modal: {
+          ondismiss: async function () {
+            // Triggered if user closes the popup without completing payment
+            console.log("Razorpay payment modal closed by user.");
+            setBookingLoading(false);
+            try {
+              await axios.post("/api/payments/failure", { orderId: order.id });
+              showToast("Payment cancelled. Stay dates released.", "error");
+            } catch (err) {
+              console.error("Failed to call payment failure API:", err);
+            }
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", async function (response) {
+        console.error("Razorpay payment failed:", response.error);
+        setBookingError(response.error.description || "Payment failed.");
+        setBookingLoading(false);
+        try {
+          await axios.post("/api/payments/failure", { orderId: order.id });
+        } catch (err) {
+          console.error("Failed to log payment failure:", err);
+        }
+      });
+
+      rzp.open();
+    } catch (err) {
+      setBookingError(err.response?.data?.message || "Failed to initiate payment order.");
+      setBookingLoading(false);
+    }
   };
 
   const handlePaymentSuccess = async (paymentData) => {
-    setShowPaymentModal(false);
     setBookingLoading(true);
     setBookingError("");
     setBookingSuccess(false);
  
     try {
-      await axios.post("/api/bookings", {
-        listingId: listing._id,
-        checkIn,
-        checkOut,
-        totalPrice: pricing.grandTotal,
-        razorpayPaymentId: paymentData.razorpay_payment_id,
-        razorpayOrderId: paymentData.razorpay_order_id,
-        paymentStatus: "paid"
+      // Send signatures to backend for secure verification and booking update
+      await axios.post("/api/payments/verify", {
+        razorpay_payment_id: paymentData.razorpay_payment_id,
+        razorpay_order_id: paymentData.razorpay_order_id,
+        razorpay_signature: paymentData.razorpay_signature
       });
+
+      // Call payment success log endpoint (optional but keeps sequence clear)
+      try {
+        await axios.post("/api/payments/success", { orderId: paymentData.razorpay_order_id });
+      } catch (logErr) {
+        console.warn("Log success error:", logErr);
+      }
+
       setBookingSuccess(true);
+      showToast("Booking confirmed and stay reserved!", "success");
       setCheckIn("");
       setCheckOut("");
+      
+      // Reload listing details to block booked dates in calendar
+      const datesRes = await axios.get(`/api/listings/${listingId}/availability`);
+      setBookedDates(datesRes.data.bookedDates || []);
     } catch (err) {
-      setBookingError(err.response?.data?.message || "Payment verified, but booking creation failed.");
+      setBookingError(err.response?.data?.message || "Payment signature verification failed.");
+      showToast("Verification failed. Please contact support.", "error");
     } finally {
       setBookingLoading(false);
     }
@@ -784,14 +864,7 @@ export default function ListingDetail({ listingId, onBack }) {
         )}
       </div>
 
-      {/* Razorpay Sandbox Checkout Modal */}
-      <RazorpayModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        amount={pricing ? pricing.grandTotal : 0}
-        listingTitle={listing.title}
-        onSuccess={handlePaymentSuccess}
-      />
+
 
       {/* Cancel Confirmation Modal */}
       <CancelBookingModal

@@ -6,13 +6,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
- "scripts": {
-  "start": "node app.js",
-  "build": "cd frontend && npm install && npm run build",
-  "dev": "nodemon app.js",
-  "test": "jest",
-  "seed": "node seed.js"
-},
+  "scripts": {
+    "start": "node app.js",
+    "build": "cd frontend && npm install && npm run build",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "seed": "node seed.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -52,6 +52,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0",
+    "razorpay": "^2.9.6",
     "redis": "^6.0.0",
     "uuid": "^11.1.0",
     "xss": "^1.0.15"

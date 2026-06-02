@@ -4,7 +4,7 @@ import axios from "axios";
 const AuthContext = createContext();
 
 // Set default backend base URL if running on a separate port
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = "http://localhost:3000";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);

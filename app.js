@@ -28,6 +28,7 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
+const paymentRouter = require("./routes/payment.js");
 
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/airbnb";
 
@@ -91,7 +92,11 @@ app.use("/api/auth", authLimiter);
 
 // 4. Express Middlewares
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString();
+  }
+}));
 app.use(methodOverride("_method"));
 
 // 5. Passport Config (Keep for user password validation)
@@ -105,6 +110,7 @@ app.use(userRouter);       // exposes auth and profile endpoints
 app.use(listingRouter);    // exposes listings endpoints
 app.use(reviewRouter);     // exposes reviews endpoints
 app.use(bookingRouter);    // exposes bookings endpoints
+app.use(paymentRouter);    // exposes payments endpoints
 
 // 7. Production Setup - Serve Frontend Static Assets
 if (process.env.NODE_ENV === "production") {
@@ -131,5 +137,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`AntiGravity server running on port ${PORT}`);
+    console.log(` server running on port ${PORT}`);
 });
