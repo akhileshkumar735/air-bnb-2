@@ -29,6 +29,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking.js");
 const paymentRouter = require("./routes/payment.js");
+const translationRouter = require("./routes/translation.js");
 
 const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/airbnb";
 
@@ -110,7 +111,8 @@ app.use(userRouter);       // exposes auth and profile endpoints
 app.use(listingRouter);    // exposes listings endpoints
 app.use(reviewRouter);     // exposes reviews endpoints
 app.use(bookingRouter);    // exposes bookings endpoints
-app.use(paymentRouter);    // exposes payments endpoints
+app.use(paymentRouter);
+app.use(translationRouter);    // exposes payments endpoints
 
 // 7. Production Setup - Serve Frontend Static Assets
 if (process.env.NODE_ENV === "production") {

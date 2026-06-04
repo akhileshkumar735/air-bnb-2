@@ -11,13 +11,29 @@ import {
 } from "lucide-react";
 
 import { useToast } from "../context/ToastContext";
+import { useTranslation } from "react-i18next";
+import { useSEO } from "../hooks/useSEO";
 
 export default function ListingDetail({ listingId, onBack }) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { showToast } = useToast();
   const { showTax } = useTax();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const currentLang = i18n.language || "en";
+  const localizedTitle = listing?.title?.[currentLang] || listing?.title?.en || listing?.title || "";
+  const localizedDesc = listing?.description?.[currentLang] || listing?.description?.en || listing?.description || "";
+  const localizedAmenities = listing?.amenities?.[currentLang] || listing?.amenities?.en || "";
+  const localizedRules = listing?.houseRules?.[currentLang] || listing?.houseRules?.en || "";
+  const localizedLocationDesc = listing?.locationDescription?.[currentLang] || listing?.locationDescription?.en || "";
+
+  useSEO({
+    title: localizedTitle,
+    description: localizedDesc,
+    pathname: `/listings/${listingId}`
+  });
   const [bookedDates, setBookedDates] = useState([]);
   
   // Bookings tracking states
@@ -187,7 +203,7 @@ export default function ListingDetail({ listingId, onBack }) {
       // Add custom popup text with properties location
       marker.bindPopup(`
         <div style="font-family: var(--font-sans); text-align: left; min-width: 140px;">
-          <h4 style="margin: 0 0 4px 0; font-weight: 800; font-size: 13px; color: #ff385c;">${listing.title}</h4>
+          <h4 style="margin: 0 0 4px 0; font-weight: 800; font-size: 13px; color: #ff385c;">${localizedTitle}</h4>
           <p style="margin: 0; font-size: 11px; font-weight: 600; color: #64748b;">${listing.location}, ${listing.country}</p>
           <p style="margin: 4px 0 0 0; font-size: 12px; font-weight: 805; color: #0f172a;">&#8377; ${price.toLocaleString()} / night</p>
         </div>
@@ -292,7 +308,7 @@ export default function ListingDetail({ listingId, onBack }) {
         amount: order.amount,
         currency: order.currency,
         name: "AntiGravity Stays",
-        description: `Booking for ${listing.title}`,
+        description: `Booking for ${localizedTitle}`,
         image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=100",
         order_id: order.id,
         handler: async function (response) {
@@ -443,19 +459,19 @@ export default function ListingDetail({ listingId, onBack }) {
         className="flex items-center space-x-2.5 text-slate-550 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 font-bold mb-6 group transition cursor-pointer"
       >
         <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-1 transition duration-200" />
-        <span>Back to explore</span>
+        <span>{t("detail.back")}</span>
       </button>
 
       {/* Main Grid Header */}
       <div className="mb-6">
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight">
-          {listing.title}
+          {localizedTitle}
         </h1>
         <div className="flex flex-wrap items-center gap-3 mt-3 text-xs md:text-sm text-slate-550 dark:text-slate-400 font-bold">
           <div className="flex items-center text-slate-850 dark:text-slate-250">
             <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1.5 shrink-0" />
             <span>{listing.averageRating > 0 ? listing.averageRating.toFixed(1) : "New"}</span>
-            {listing.reviewCount > 0 && <span className="ml-1 font-medium text-slate-450">({listing.reviewCount} reviews)</span>}
+            {listing.reviewCount > 0 && <span className="ml-1 font-medium text-slate-455">({listing.reviewCount} {listing.reviewCount === 1 ? t("detail.review") : t("detail.reviews")})</span>}
           </div>
           <span>&middot;</span>
           <div className="flex items-center hover:text-brand transition cursor-pointer">
@@ -464,17 +480,17 @@ export default function ListingDetail({ listingId, onBack }) {
           </div>
           <span className="hidden sm:inline">&middot;</span>
           <span className="bg-brand/10 dark:bg-brand/15 text-brand dark:text-brand-light px-3 py-1 rounded-full text-[10px] uppercase tracking-wider">
-            {listing.category}
+            {t(`categories.${listing.category}`)}
           </span>
         </div>
       </div>
 
-      {/* Premium Image Gallery Grid (Mocking multi-images for premium feel) */}
+      {/* Premium Image Gallery Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3 rounded-3xl overflow-hidden mb-10 shadow-md">
         <div className="md:col-span-2 aspect-[4/3] md:aspect-auto md:h-[380px] overflow-hidden bg-slate-100 dark:bg-slate-850">
           <img 
             src={listing.image?.url || "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200"} 
-            alt={listing.title} 
+            alt={localizedTitle} 
             className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
           />
         </div>
@@ -522,11 +538,11 @@ export default function ListingDetail({ listingId, onBack }) {
           <div className="flex items-center justify-between pb-6 border-b border-slate-200/50 dark:border-slate-800/40">
             <div>
               <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-slate-100 flex items-center">
-                Hosted by {listing.owner?.username || "Superhost"}
+                {t("detail.hosted_by", { name: listing.owner?.username || "Superhost" })}
                 <CheckCircle className="h-5 w-5 text-indigo-500 ml-2 fill-indigo-500/10" />
               </h2>
-              <p className="text-xs font-semibold text-slate-450 dark:text-slate-500 mt-1 uppercase tracking-wider">
-                AntiGravity Verified Partner &middot; Professional Host
+              <p className="text-xs font-bold text-slate-450 dark:text-slate-500 mt-1 uppercase tracking-wider">
+                {t("detail.verified_partner")}
               </p>
             </div>
             <img 
@@ -554,15 +570,50 @@ export default function ListingDetail({ listingId, onBack }) {
 
           {/* Space Description */}
           <div className="space-y-3">
-            <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150">About this space</h3>
-            <p className="text-slate-650 dark:text-slate-300 leading-relaxed text-xs sm:text-sm whitespace-pre-line">
-              {listing.description}
+            <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150">{t("detail.about")}</h3>
+            <p className="text-slate-650 dark:text-slate-300 leading-relaxed text-xs sm:text-sm whitespace-pre-line font-bold">
+              {localizedDesc}
             </p>
           </div>
 
-          {/* Real Interactive Leaflet Map */}
+          {/* Dynamic Location Neighbourhood Description */}
+          {localizedLocationDesc && (
+            <div className="pt-6 border-t border-slate-200/50 dark:border-slate-800/40 space-y-3">
+              <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150">{t("detail.location_description")}</h3>
+              <p className="text-slate-650 dark:text-slate-300 leading-relaxed text-xs sm:text-sm whitespace-pre-line font-bold">
+                {localizedLocationDesc}
+              </p>
+            </div>
+          )}
+
+          {/* Dynamic Amenities from DB */}
+          {localizedAmenities && (
+            <div className="pt-6 border-t border-slate-200/50 dark:border-slate-800/40 space-y-3">
+              <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150">{t("detail.amenities")}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm font-bold text-slate-650 dark:text-slate-350">
+                {localizedAmenities.split(",").map((item, idx) => (
+                  <div key={idx} className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <span>{item.trim()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Dynamic House Rules from DB */}
+          {localizedRules && (
+            <div className="pt-6 border-t border-slate-200/50 dark:border-slate-800/40 space-y-3">
+              <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150">{t("detail.house_rules")}</h3>
+              <p className="text-slate-650 dark:text-slate-300 leading-relaxed text-xs sm:text-sm whitespace-pre-line font-bold">
+                {localizedRules}
+              </p>
+            </div>
+          )}
+
+          {/* Map Section */}
           <div className="pt-6 border-t border-slate-200/50 dark:border-slate-800/40">
-            <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150 mb-4">Where you'll be</h3>
+            <h3 className="text-lg font-extrabold text-slate-900 dark:text-slate-150 mb-4">{t("detail.where_will_be")}</h3>
             <div 
               id="map-container" 
               className="h-80 w-full rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-800/60 shadow-inner z-10"
@@ -580,12 +631,12 @@ export default function ListingDetail({ listingId, onBack }) {
               <div>
                 <div className="flex items-baseline space-x-1">
                   <span className="text-2xl font-extrabold text-slate-900 dark:text-white">&#8377;{(showTax ? Math.round(currentPrice * 1.18) : currentPrice).toLocaleString()}</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-450 font-bold uppercase tracking-wider">/ night</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-450 font-bold uppercase tracking-wider">{t("detail.night")}</span>
                 </div>
                 {showTax ? (
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-0.5 uppercase tracking-wider">includes 18% GST</span>
+                  <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold block mt-0.5 uppercase tracking-wider">{t("detail.includes_gst")}</span>
                 ) : (
-                  <span className="text-[10px] text-slate-400 dark:text-slate-550 font-semibold block mt-0.5 uppercase tracking-wider">+ 18% GST</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-550 font-semibold block mt-0.5 uppercase tracking-wider">{t("detail.excludes_gst")}</span>
                 )}
               </div>
               <div className="flex items-center text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -598,9 +649,9 @@ export default function ListingDetail({ listingId, onBack }) {
               <div className="bg-slate-950/40 border border-slate-200/20 dark:border-slate-800/40 p-4 rounded-2xl text-center space-y-3.5 animate-fade-in mb-3">
                 <div className="flex items-center justify-between">
                   <span className="bg-brand/10 text-brand border border-brand/20 px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center">
-                    <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Host Mode
+                    <ShieldCheck className="h-3.5 w-3.5 mr-1" /> {t("detail.host_mode")}
                   </span>
-                  <span className="text-[9px] text-slate-450 dark:text-slate-500 font-bold uppercase tracking-wider">You own this listing</span>
+                  <span className="text-[9px] text-slate-450 dark:text-slate-500 font-bold uppercase tracking-wider">{t("detail.you_own")}</span>
                 </div>
                 
                 {hostActionError && (
@@ -616,7 +667,7 @@ export default function ListingDetail({ listingId, onBack }) {
                     className="py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white font-extrabold rounded-xl text-[10px] uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-1.5"
                   >
                     <Edit className="h-3.5 w-3.5" />
-                    <span>Edit Details</span>
+                    <span>{t("detail.edit_details")}</span>
                   </button>
                   <button
                     type="button"
@@ -624,7 +675,7 @@ export default function ListingDetail({ listingId, onBack }) {
                     className="py-2.5 bg-gradient-to-r from-red-650 to-rose-700 hover:from-red-700 hover:to-rose-850 text-white font-extrabold rounded-xl text-[10px] uppercase tracking-wider cursor-pointer active:scale-95 transition flex items-center justify-center space-x-1.5"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    <span>Delete Listing</span>
+                    <span>{t("detail.delete_listing")}</span>
                   </button>
                 </div>
               </div>
@@ -634,32 +685,32 @@ export default function ListingDetail({ listingId, onBack }) {
               <div className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center space-y-4 animate-fade-in">
                 <div className="flex flex-col items-center">
                   <span className="bg-emerald-500/10 text-emerald-450 border border-emerald-500/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider mb-2">
-                    ✓ Confirmed Trip
+                    {t("detail.confirmed_trip")}
                   </span>
-                  <p className="font-extrabold text-xs text-white uppercase tracking-wider">Stay Reserved</p>
+                  <p className="font-extrabold text-xs text-white uppercase tracking-wider">{t("detail.stay_reserved")}</p>
                   <p className="text-[9px] text-slate-455 mt-1 uppercase tracking-widest">ID: {activeBooking._id.substring(18)}</p>
                 </div>
                 
                 <div className="border border-slate-850 rounded-xl p-3 bg-slate-950/50 space-y-2.5 text-xs text-left">
                   <div className="flex justify-between font-bold">
-                    <span className="text-slate-450 uppercase text-[9px] tracking-wider">Check-in</span>
+                    <span className="text-slate-450 uppercase text-[9px] tracking-wider">{t("detail.check_in")}</span>
                     <span className="text-slate-200">{new Date(activeBooking.checkIn).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                   <div className="flex justify-between font-bold">
-                    <span className="text-slate-455 uppercase text-[9px] tracking-wider">Check-out</span>
+                    <span className="text-slate-455 uppercase text-[9px] tracking-wider">{t("detail.check_out")}</span>
                     <span className="text-slate-200">{new Date(activeBooking.checkOut).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                   <div className="flex justify-between font-bold border-t border-slate-850 pt-2">
-                    <span className="text-slate-450 uppercase text-[9px] tracking-wider">Total Price</span>
+                    <span className="text-slate-450 uppercase text-[9px] tracking-wider">{t("detail.total_price")}</span>
                     <span className="text-brand font-extrabold">&#8377;{activeBooking.totalPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between font-bold">
-                    <span className="text-slate-455 uppercase text-[9px] tracking-wider">Status</span>
-                    <span className="text-emerald-450 font-black uppercase text-[10px] tracking-wide">{activeBooking.paymentStatus === 'paid' ? '✓ Paid' : 'Pending'}</span>
+                    <span className="text-slate-455 uppercase text-[9px] tracking-wider">{t("detail.status")}</span>
+                    <span className="text-emerald-450 font-black uppercase text-[10px] tracking-wide">{activeBooking.paymentStatus === 'paid' ? t("detail.paid") : t("detail.pending")}</span>
                   </div>
                 </div>
 
-                {/* Cancel Booking Action with 24-hour limit checks */}
+                {/* Cancel Booking Action */}
                 {(() => {
                   const bookingTime = new Date(activeBooking.createdAt);
                   const now = new Date();
@@ -671,11 +722,11 @@ export default function ListingDetail({ listingId, onBack }) {
                       onClick={() => setCancelModalOpen(true)}
                       className="w-full py-3.5 bg-gradient-to-r from-red-650 to-rose-700 hover:from-red-750 hover:to-rose-800 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider cursor-pointer active:scale-95 transition shadow-lg shadow-red-950/20"
                     >
-                      Cancel Reservation
+                      {t("detail.cancel_reservation")}
                     </button>
                   ) : (
-                    <div className="text-[9px] text-red-500 font-extrabold uppercase bg-red-950/10 border border-red-900/20 py-2.5 rounded-xl text-center tracking-wider">
-                      Refund Expired (24h Window Closed)
+                    <div className="text-[9px] text-red-500 font-extrabold uppercase bg-red-955/10 border border-red-900/20 py-2.5 rounded-xl text-center tracking-wider">
+                      {t("detail.refund_expired")}
                     </div>
                   );
                 })()}
@@ -683,15 +734,15 @@ export default function ListingDetail({ listingId, onBack }) {
             ) : bookingSuccess ? (
               <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 p-5 rounded-2xl text-center space-y-2.5 animate-bounce">
                 <p className="font-extrabold text-sm">Booking Confirmed!</p>
-                <p className="text-[11px] leading-relaxed">Your reservation is confirmed. Visit the Guests Dashboard to check status.</p>
+                <p className="text-[11px] leading-relaxed font-semibold">Your reservation is confirmed. Visit the Trips & Bookings Dashboard to check status.</p>
               </div>
             ) : (
               <form onSubmit={handleBook} className="space-y-4">
                 
-                {/* Date Fields inside sleek dark border */}
+                {/* Date Fields */}
                 <div className="grid grid-cols-2 gap-2 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 bg-slate-50/50 dark:bg-slate-900/50">
                   <div className="flex flex-col text-left">
-                    <label className="text-[9px] uppercase font-extrabold text-slate-400 dark:text-slate-550 mb-0.5 tracking-wider">Check-in</label>
+                    <label className="text-[9px] uppercase font-extrabold text-slate-400 dark:text-slate-550 mb-0.5 tracking-wider">{t("detail.check_in")}</label>
                     <input 
                       type="date" 
                       required
@@ -701,7 +752,7 @@ export default function ListingDetail({ listingId, onBack }) {
                     />
                   </div>
                   <div className="flex flex-col text-left border-l border-slate-200 dark:border-slate-800 pl-3">
-                    <label className="text-[9px] uppercase font-extrabold text-slate-400 dark:text-slate-550 mb-0.5 tracking-wider">Check-out</label>
+                    <label className="text-[9px] uppercase font-extrabold text-slate-400 dark:text-slate-555 mb-0.5 tracking-wider">{t("detail.check_out")}</label>
                     <input 
                       type="date" 
                       required
@@ -712,7 +763,7 @@ export default function ListingDetail({ listingId, onBack }) {
                   </div>
                 </div>
 
-                {/* Price Calculations breakdown list */}
+                {/* Price Calculations */}
                 {pricing && (
                   <div className="space-y-3.5 text-xs text-slate-650 dark:text-slate-350 border-t border-slate-200/50 dark:border-slate-800/40 pt-4 animate-fade-in">
                     <div className="flex justify-between font-medium">
@@ -733,7 +784,7 @@ export default function ListingDetail({ listingId, onBack }) {
                     </div>
                     <hr className="border-slate-200/50 dark:border-slate-800/45" />
                     <div className="flex justify-between text-sm sm:text-base font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-                      <span>Total Price</span>
+                      <span>{t("detail.total_price")}</span>
                       <span className="text-brand dark:text-brand-light">&#8377;{pricing.grandTotal.toLocaleString()}</span>
                     </div>
                   </div>
@@ -752,13 +803,13 @@ export default function ListingDetail({ listingId, onBack }) {
                   disabled={bookingLoading || !pricing}
                   className="w-full py-3.5 bg-gradient-to-r from-brand to-pink-650 hover:from-brand-dark hover:to-pink-700 disabled:from-slate-200 disabled:to-slate-200 dark:disabled:from-slate-850 dark:disabled:to-slate-850 disabled:text-slate-400 dark:disabled:text-slate-650 disabled:cursor-not-allowed text-white font-extrabold rounded-2xl shadow-lg hover:shadow-brand/10 transition-all duration-300 cursor-pointer text-xs uppercase tracking-wider"
                 >
-                  {bookingLoading ? "Confirming Space..." : pricing ? "Reserve listing" : "Select date range"}
+                  {bookingLoading ? t("detail.confirming_space") : pricing ? t("detail.reserve") : t("detail.select_date")}
                 </button>
               </form>
             )}
             
             <p className="text-center text-[10px] text-slate-450 dark:text-slate-500 uppercase tracking-widest font-bold">
-              You won't be charged yet &middot; Free Cancellation 24h
+              {t("detail.not_charged")}
             </p>
           </div>
         </div>
@@ -773,12 +824,12 @@ export default function ListingDetail({ listingId, onBack }) {
           <Star className="h-5.5 w-5.5 fill-amber-400 text-amber-400 shrink-0" />
           <span>{listing.averageRating > 0 ? listing.averageRating.toFixed(1) : "New"}</span>
           <span className="text-slate-300 dark:text-slate-800">&middot;</span>
-          <span>{listing.reviews?.length || 0} reviews</span>
+          <span>{listing.reviews?.length || 0} {listing.reviews?.length === 1 ? t("detail.review") : t("detail.reviews")}</span>
         </div>
 
-        {/* Existing Reviews cards list */}
+        {/* Existing Reviews */}
         {listing.reviews?.length === 0 ? (
-          <p className="text-slate-450 text-xs font-semibold uppercase tracking-wider italic mb-8">No reviews yet for this listing. Be the first to share your thoughts!</p>
+          <p className="text-slate-455 text-xs font-bold uppercase tracking-wider italic mb-8">{t("detail.no_reviews")}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {listing.reviews.map((rev) => (
@@ -799,7 +850,7 @@ export default function ListingDetail({ listingId, onBack }) {
                       </div>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-semibold">
                     {rev.comment}
                   </p>
                 </div>
@@ -811,13 +862,13 @@ export default function ListingDetail({ listingId, onBack }) {
           </div>
         )}
 
-        {/* Submit Review card wrapper */}
+        {/* Submit Review */}
         {user ? (
           <form onSubmit={handleAddReview} className="glass-panel p-6 sm:p-8 border border-slate-250/50 dark:border-slate-800/40 rounded-3xl max-w-xl space-y-5">
-            <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-base md:text-lg">Write a Review</h4>
+            <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-base md:text-lg">{t("detail.write_review")}</h4>
             
             <div className="flex items-center space-x-3">
-              <span className="text-xs font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">Your Rating:</span>
+              <span className="text-xs font-extrabold text-slate-450 dark:text-slate-555 uppercase tracking-wider">{t("detail.your_rating")}</span>
               <div className="flex space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -836,10 +887,10 @@ export default function ListingDetail({ listingId, onBack }) {
               <textarea
                 required
                 rows={4}
-                placeholder="Share details of your own experience at this place..."
+                placeholder={t("detail.comment_placeholder")}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="w-full p-4 border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 rounded-2xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition-colors font-medium leading-relaxed"
+                className="w-full p-4 border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 rounded-2xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition-colors font-bold leading-relaxed"
               />
             </div>
 
@@ -852,19 +903,17 @@ export default function ListingDetail({ listingId, onBack }) {
               disabled={reviewLoading}
               className="px-6 py-3 bg-slate-900 hover:bg-slate-850 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-950 rounded-2xl font-extrabold text-xs uppercase tracking-wider shadow-md hover:scale-103 active:scale-97 transition-all flex items-center cursor-pointer"
             >
-              <Send className="h-3.5 w-3.5 mr-2 shrink-0" /> {reviewLoading ? "Submitting..." : "Submit Review"}
+              <Send className="h-3.5 w-3.5 mr-2 shrink-0" /> {reviewLoading ? t("detail.submitting_review") : t("detail.submit_review")}
             </button>
           </form>
         ) : (
           <div className="bg-slate-50 dark:bg-slate-900/40 p-5 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl text-center max-w-md">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
-              Please log in to submit ratings and write reviews for this listing.
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-bold">
+              {t("detail.login_to_review")}
             </p>
           </div>
         )}
       </div>
-
-
 
       {/* Cancel Confirmation Modal */}
       <CancelBookingModal
@@ -891,8 +940,8 @@ export default function ListingDetail({ listingId, onBack }) {
             <h3 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-800/50 pb-3">
               Delete Property?
             </h3>
-            <p className="text-xs text-slate-650 dark:text-slate-400 font-semibold leading-relaxed mt-4">
-              Are you sure you want to delete <span className="font-extrabold text-slate-850 dark:text-white">"{listing.title}"</span>? 
+            <p className="text-xs text-slate-655 dark:text-slate-400 font-bold leading-relaxed mt-4">
+              Are you sure you want to delete <span className="font-extrabold text-slate-850 dark:text-white">"{localizedTitle}"</span>? 
             </p>
             <div className="mt-3 p-3 bg-rose-50 dark:bg-rose-955/10 border border-rose-250 dark:border-rose-900/30 text-rose-700 dark:text-rose-400 rounded-2xl text-[10px] font-bold leading-normal flex items-start">
               <span className="mr-2">⚠️</span>

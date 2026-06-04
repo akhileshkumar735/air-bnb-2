@@ -4,8 +4,11 @@ import { useTheme } from "../context/ThemeContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTax } from "../context/TaxContext";
 import { Sun, Moon, Compass, Heart, User, LogOut, Menu, Globe, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "./LanguageSelector";
 
 export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
   const { wishlist } = useWishlist();
@@ -57,35 +60,35 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
             className="hidden sm:flex items-center space-x-4 pl-6 pr-2 py-2 border border-slate-200/60 dark:border-slate-800/80 rounded-full hover:shadow-md cursor-pointer transition-all duration-300 bg-white dark:bg-slate-850 hover:border-brand/40 dark:hover:border-indigo-500/40"
           >
             <div className="flex flex-col text-left">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-500">Where</span>
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-350">Anywhere</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-500">{t("navbar.where")}</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-350">{t("navbar.anywhere")}</span>
             </div>
             <span className="h-6 w-px bg-slate-200 dark:bg-slate-800"></span>
             
             <div className="flex flex-col text-left">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-500">When</span>
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-350">Any week</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-500">{t("navbar.when")}</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-350">{t("navbar.any_week")}</span>
             </div>
             <span className="h-6 w-px bg-slate-200 dark:bg-slate-800"></span>
             
             <div className="flex flex-col text-left pr-4">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-500">Who</span>
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Add guests</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-500">{t("navbar.who")}</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{t("navbar.add_guests")}</span>
             </div>
             
             <div className="p-2.5 bg-brand text-white rounded-full hover:scale-105 active:scale-95 shadow-sm hover:shadow-brand/20 transition-all duration-300">
               <Search className="h-4 w-4" />
             </div>
           </div>
-
+ 
           {/* Right Action Menu */}
           <div className="flex items-center space-x-2 sm:space-x-3">
             
             {/* Tax Switch Toggle */}
             <div className="flex items-center space-x-2.5 border border-slate-200/60 dark:border-slate-800/80 px-3 py-1.5 rounded-full bg-slate-50/50 dark:bg-slate-900/40 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-all duration-300 mr-1 sm:mr-2">
               <span className="text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-350 tracking-wider uppercase">
-                <span className="hidden sm:inline">Display total after taxes</span>
-                <span className="hidden min-[380px]:inline sm:hidden">Taxes</span>
+                <span className="hidden sm:inline">{t("navbar.taxes")}</span>
+                <span className="hidden min-[380px]:inline sm:hidden">{t("navbar.taxes_short")}</span>
               </span>
               <button 
                 onClick={toggleShowTax}
@@ -97,6 +100,9 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                 />
               </button>
             </div>
+ 
+            {/* Language Selection Selector */}
+            <LanguageSelector />
 
             {/* Dark Mode Selector with Smooth Twist */}
             <button 
@@ -110,7 +116,7 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                 <Moon className="h-5 w-5 text-slate-600 hover:-rotate-12 transition-transform duration-500" />
               )}
             </button>
-
+ 
             {/* Wishlist Button with Floating Badge */}
             <button 
               onClick={() => setActiveTab("wishlist")}
@@ -124,7 +130,7 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                 </span>
               )}
             </button>
-
+ 
             {/* Premium Profile Dropdown */}
             <div className="relative">
               <button 
@@ -147,7 +153,7 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                   </div>
                 )}
               </button>
-
+ 
               {dropdownOpen && (
                 <>
                   {/* Overlay to catch clicks and close */}
@@ -166,21 +172,21 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                             className="w-full text-left px-3.5 py-2 hover:bg-slate-100/60 dark:hover:bg-slate-800/50 text-slate-750 dark:text-slate-300 rounded-xl flex items-center transition"
                           >
                             <User className="h-4 w-4 mr-2.5 text-slate-450 dark:text-slate-500" /> 
-                            <span>My Profile</span>
+                            <span>{t("navbar.my_profile")}</span>
                           </button>
                           <button 
                             onClick={() => { setActiveTab("guest-dashboard"); setDropdownOpen(false); }}
                             className="w-full text-left px-3.5 py-2 hover:bg-slate-100/60 dark:hover:bg-slate-800/50 text-slate-750 dark:text-slate-300 rounded-xl flex items-center transition"
                           >
                             <Compass className="h-4 w-4 mr-2.5 text-slate-450 dark:text-slate-500" /> 
-                            <span>Trips & Bookings</span>
+                            <span>{t("navbar.trips_bookings")}</span>
                           </button>
                           <button 
                             onClick={() => { setActiveTab("host-dashboard"); setDropdownOpen(false); }}
                             className="w-full text-left px-3.5 py-2 hover:bg-slate-100/60 dark:hover:bg-slate-800/50 text-slate-750 dark:text-slate-300 rounded-xl flex items-center transition"
                           >
                             <Globe className="h-4 w-4 mr-2.5 text-slate-450 dark:text-slate-500" /> 
-                            <span>Host Dashboard</span>
+                            <span>{t("navbar.host_dashboard")}</span>
                           </button>
                         </div>
                         <hr className="my-1 border-slate-200/50 dark:border-slate-800/35" />
@@ -190,7 +196,7 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                             className="w-full text-left px-3.5 py-2 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-550 dark:text-red-400 rounded-xl flex items-center transition font-semibold"
                           >
                             <LogOut className="h-4 w-4 mr-2.5 text-red-450 dark:text-red-500" /> 
-                            <span>Log out</span>
+                            <span>{t("navbar.logout")}</span>
                           </button>
                         </div>
                       </>
@@ -200,13 +206,13 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                           onClick={() => { setActiveTab("login"); setDropdownOpen(false); }}
                           className="w-full text-left px-3.5 py-2.5 hover:bg-slate-100/60 dark:hover:bg-slate-800/50 text-slate-850 dark:text-slate-200 rounded-xl font-bold transition"
                         >
-                          Log in
+                          {t("navbar.login")}
                         </button>
                         <button 
                           onClick={() => { setActiveTab("signup"); setDropdownOpen(false); }}
                           className="w-full text-left px-3.5 py-2.5 hover:bg-slate-100/60 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400 rounded-xl font-medium transition"
                         >
-                          Create Account
+                          {t("navbar.create_account")}
                         </button>
                       </div>
                     )}
@@ -214,7 +220,7 @@ export default function Navbar({ onSearchTrigger, activeTab, setActiveTab }) {
                 </>
               )}
             </div>
-
+ 
           </div>
         </div>
       </div>

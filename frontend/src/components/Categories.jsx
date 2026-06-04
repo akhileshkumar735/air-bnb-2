@@ -1,5 +1,6 @@
 import React from "react";
 import { Palmtree, Mountain, History, TreePine, Flame, Building2, Crown, Waves, Compass, Sailboat } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const categoryList = [
   { label: "Beach", icon: Palmtree },
@@ -15,6 +16,7 @@ const categoryList = [
 ];
 
 export default function Categories({ selectedCategory, onSelectCategory }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800/40 py-4 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,7 +37,7 @@ export default function Categories({ selectedCategory, onSelectCategory }) {
                 }`}
               >
                 <Icon className={`h-5 w-5 transition duration-300 ${isSelected ? "scale-110" : "group-hover:-translate-y-0.5"}`} />
-                <span>{item.label}</span>
+                <span>{t(`categories.${item.label}`)}</span>
               </button>
             );
           })}

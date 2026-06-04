@@ -3,8 +3,10 @@ import axios from "axios";
 import { Compass, Calendar, ArrowRight, ShieldAlert, Sparkles, Trash } from "lucide-react";
 import CancelBookingModal from "../components/CancelBookingModal";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export default function UserDashboard({ onSelectListing }) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,8 +81,8 @@ export default function UserDashboard({ onSelectListing }) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 transition-colors duration-200">
       <div className="mb-8 text-left">
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Trips & Bookings</h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-semibold">Manage, cancel, and review your vacation stays reservation history.</p>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{t("user_dashboard.title")}</h1>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-semibold">{t("user_dashboard.subtitle")}</p>
       </div>
 
       {/* Tabs Menu in clean floating capsule */}
@@ -95,19 +97,19 @@ export default function UserDashboard({ onSelectListing }) {
                 : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
             }`}
           >
-            {tab}
+            {t(`user_dashboard.tab_${tab}`)}
           </button>
         ))}
       </div>
 
       {filteredBookings.length === 0 ? (
         <div className="glass-panel border border-slate-200/60 dark:border-slate-800/40 rounded-3xl p-12 text-center shadow-sm">
-          <Compass className="h-10 w-10 text-slate-400 dark:text-slate-500 mx-auto mb-4 animate-spin-slow" />
-          <h3 className="font-extrabold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1">No trips found</h3>
+          <Compass className="h-10 w-10 text-slate-400 dark:text-slate-555 mx-auto mb-4 animate-spin-slow" />
+          <h3 className="font-extrabold text-sm text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-1">{t("user_dashboard.empty_title")}</h3>
           <p className="text-xs text-slate-500 dark:text-slate-450 leading-relaxed font-semibold">
             {activeTab === "upcoming" 
-              ? "Time to dust off your bags and start planning your next getaway!" 
-              : `You have no ${activeTab} reservations.`}
+              ? t("user_dashboard.empty_upcoming_subtitle") 
+              : t("user_dashboard.empty_subtitle", { tab: t(`user_dashboard.tab_${activeTab}`) })}
           </p>
         </div>
       ) : (
@@ -138,7 +140,9 @@ export default function UserDashboard({ onSelectListing }) {
                         >
                           {listing.location}, {listing.country}
                         </h4>
-                        <p className="text-[11px] text-slate-450 dark:text-slate-500 font-bold uppercase tracking-wider mt-0.5">{listing.title}</p>
+                        <p className="text-[11px] text-slate-450 dark:text-slate-500 font-bold uppercase tracking-wider mt-0.5">
+                          {listing.title?.[i18n.language || "en"] || listing.title?.en || listing.title || ""}
+                        </p>
                       </div>
                       <span className="text-base font-extrabold text-brand dark:text-brand-light shrink-0">&#8377;{b.totalPrice.toLocaleString()}</span>
                     </div>
@@ -153,20 +157,20 @@ export default function UserDashboard({ onSelectListing }) {
 
                   <div className="flex justify-between items-center mt-6 border-t border-slate-100 dark:border-slate-800/45 pt-4">
                     <div className="flex items-center space-x-2">
-                      <span className="text-[9px] uppercase font-extrabold tracking-widest px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 font-bold">
+                      <span className="text-[9px] uppercase font-extrabold tracking-widest px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-800 bg-slate-50 dark:bg-slate-955 text-slate-500 dark:text-slate-400 font-bold">
                         ID: {b._id.substring(18)}
                       </span>
                       {b.paymentStatus === "paid" ? (
                         <span className="text-[9px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200/30 dark:border-emerald-900/30 font-bold">
-                          ✓ Paid
+                          ✓ {t("user_dashboard.status_paid")}
                         </span>
                       ) : b.paymentStatus === "refunded" ? (
-                        <span className="text-[9px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border border-blue-200/30 dark:border-blue-900/30 font-bold">
-                          ↺ Refunded
+                        <span className="text-[9px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-955/20 text-blue-600 dark:text-blue-400 border border-blue-200/30 dark:border-blue-900/30 font-bold">
+                          ↺ {t("user_dashboard.status_refunded")}
                         </span>
                       ) : (
                         <span className="text-[9px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border border-amber-200/30 dark:border-amber-900/30 font-bold">
-                          ⚡ Pending
+                          ⚡ {t("user_dashboard.status_pending")}
                         </span>
                       )}
                     </div>
@@ -177,13 +181,13 @@ export default function UserDashboard({ onSelectListing }) {
                             setSelectedBookingForCancel(b);
                             setIsCancelModalOpen(true);
                           }}
-                          className="px-4.5 py-2 border border-red-200 dark:border-red-950 text-red-550 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs font-extrabold rounded-xl transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center"
+                          className="px-4.5 py-2 border border-red-200 dark:border-red-950 text-red-550 dark:text-red-400 hover:bg-red-55 dark:hover:bg-red-950/20 text-xs font-extrabold rounded-xl transition active:scale-95 cursor-pointer uppercase tracking-wider flex items-center"
                         >
-                          <Trash className="h-3.5 w-3.5 mr-1.5" /> Cancel Reservation
+                          <Trash className="h-3.5 w-3.5 mr-1.5" /> {t("user_dashboard.cancel_btn")}
                         </button>
                       ) : (
                         <span className="text-[10px] uppercase font-extrabold tracking-wider text-red-550 dark:text-red-400 px-3 py-2 bg-red-50 dark:bg-red-950/10 border border-red-100 dark:border-red-900/20 rounded-xl">
-                          Refund Expired (24h window closed)
+                           {t("user_dashboard.refund_expired")}
                         </span>
                       )
                     )}

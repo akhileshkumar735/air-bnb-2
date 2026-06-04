@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Mail, Lock, User, PlusCircle, ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Signup({ onToggleAuth, onBackToHome }) {
+  const { t } = useTranslation();
   const { register, loginWithGoogle } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -19,7 +21,7 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
       await register(username, email, password, avatar);
       onBackToHome();
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed. Email or username might be in use.");
+      setError(err.response?.data?.message || t("signup.error_register") || "Registration failed. Email or username might be in use.");
     } finally {
       setLoading(false);
     }
@@ -70,12 +72,12 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
       <div className="glass-panel border border-slate-200/50 dark:border-slate-800/40 shadow-2xl rounded-3xl p-8 space-y-6">
         
         <div className="text-center space-y-1">
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Create Account</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Join AntiGravity and find luxury listings</p>
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">{t("signup.title")}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-bold">{t("signup.subtitle")}</p>
         </div>
 
         {error && (
-          <p className="bg-red-50 dark:bg-red-950/20 text-red-500 border border-red-100 dark:border-red-900/40 rounded-2xl p-3.5 text-xs font-bold text-center leading-tight">
+          <p className="bg-red-50 dark:bg-red-950/20 text-red-550 border border-red-100 dark:border-red-900/40 rounded-2xl p-3.5 text-xs font-bold text-center leading-tight">
             {error}
           </p>
         )}
@@ -83,7 +85,7 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col space-y-1.5 text-left">
             <label className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider flex items-center">
-              <User className="h-3.5 w-3.5 mr-2 text-brand" /> Username
+              <User className="h-3.5 w-3.5 mr-2 text-brand" /> {t("signup.username")}
             </label>
             <input 
               type="text" 
@@ -91,13 +93,13 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
               placeholder="username_1"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3.5 border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition font-medium"
+              className="w-full p-3.5 border border-slate-200 dark:border-slate-855 bg-slate-50/50 dark:bg-slate-900/60 rounded-xl text-xs sm:text-sm text-slate-855 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition font-bold"
             />
           </div>
 
           <div className="flex flex-col space-y-1.5 text-left">
             <label className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider flex items-center">
-              <Mail className="h-3.5 w-3.5 mr-2 text-brand" /> Email Address
+              <Mail className="h-3.5 w-3.5 mr-2 text-brand" /> {t("signup.email")}
             </label>
             <input 
               type="email" 
@@ -105,13 +107,13 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
               placeholder="example@mail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3.5 border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition font-medium"
+              className="w-full p-3.5 border border-slate-200 dark:border-slate-855 bg-slate-50/50 dark:bg-slate-900/60 rounded-xl text-xs sm:text-sm text-slate-855 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition font-bold"
             />
           </div>
 
           <div className="flex flex-col space-y-1.5 text-left">
             <label className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider flex items-center">
-              <Lock className="h-3.5 w-3.5 mr-2 text-brand" /> Password
+              <Lock className="h-3.5 w-3.5 mr-2 text-brand" /> {t("signup.password")}
             </label>
             <input 
               type="password" 
@@ -119,7 +121,7 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3.5 border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/60 rounded-xl text-xs sm:text-sm text-slate-800 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition font-medium"
+              className="w-full p-3.5 border border-slate-200 dark:border-slate-855 bg-slate-50/50 dark:bg-slate-900/60 rounded-xl text-xs sm:text-sm text-slate-855 dark:text-slate-200 outline-none focus:border-brand dark:focus:border-indigo-500 transition font-bold"
             />
           </div>
 
@@ -128,13 +130,13 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
             disabled={loading}
             className="w-full py-3.5 bg-gradient-to-r from-brand to-pink-650 hover:from-brand-dark hover:to-pink-700 text-white rounded-xl font-bold tracking-wide shadow-md hover:shadow-brand/10 transition flex items-center justify-center cursor-pointer mt-6 text-xs uppercase"
           >
-            <PlusCircle className="h-4 w-4 mr-2" /> {loading ? "Creating Account..." : "Create Account"}
+            <PlusCircle className="h-4 w-4 mr-2" /> {loading ? t("signup.submitting") : t("signup.submit")}
           </button>
         </form>
 
         <div className="relative flex py-2 items-center">
           <div className="flex-grow border-t border-slate-200 dark:border-slate-800/40"></div>
-          <span className="flex-shrink mx-4 text-slate-400 text-[10px] uppercase font-bold tracking-wider">or continue with</span>
+          <span className="flex-shrink mx-4 text-slate-400 text-[10px] uppercase font-black tracking-wider">{t("signup.or_continue")}</span>
           <div className="flex-grow border-t border-slate-200 dark:border-slate-800/40"></div>
         </div>
 
@@ -145,7 +147,7 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
             <button
               type="button"
               onClick={handleMockGoogleLogin}
-              className="w-full py-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-750 rounded-xl font-bold transition flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer text-xs"
+              className="w-full py-3 bg-white dark:bg-slate-800 text-slate-805 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-750 rounded-xl font-bold transition flex items-center justify-center border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer text-xs"
             >
               <svg className="h-4 w-4 mr-2.5" viewBox="0 0 24 24">
                 <path
@@ -165,20 +167,20 @@ export default function Signup({ onToggleAuth, onBackToHome }) {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              Simulate Google Login (Dev Mode)
+              {t("login.google_login")}
             </button>
           )}
         </div>
 
         <hr className="border-slate-200/50 dark:border-slate-800/40" />
         
-        <div className="text-center text-xs text-slate-500 dark:text-slate-450 font-medium">
-          <span>Already have an account?</span>{" "}
+        <div className="text-center text-xs text-slate-500 dark:text-slate-450 font-bold">
+          <span>{t("signup.already_have_acc")}</span>{" "}
           <button 
             onClick={onToggleAuth} 
-            className="text-brand dark:text-brand-light hover:underline font-bold flex items-center justify-center mx-auto mt-1 cursor-pointer"
+            className="text-brand dark:text-brand-light hover:underline font-extrabold flex items-center justify-center mx-auto mt-1 cursor-pointer"
           >
-            Log in <ArrowLeft className="h-3 w-3 ml-1" />
+            {t("signup.login")} <ArrowLeft className="h-3 w-3 ml-1" />
           </button>
         </div>
       </div>

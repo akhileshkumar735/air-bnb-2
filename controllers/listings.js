@@ -1,6 +1,7 @@
 const Listing = require("../models/listing");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const cacheManager = require("../utils/cache.js");
+const { translateText } = require("../utils/translator.js");
 
 const mapToken = process.env.MAP_TOKEN || "mock_token";
 let geocodingClient = null;
@@ -125,11 +126,61 @@ module.exports.showListing = async (req, res) => {
   }
 };
 
-// 3. Create Listing (with Geocoding fallback)
+// 3. Create Listing (with Geocoding fallback and Auto Translation)
 module.exports.createListing = async (req, res, next) => {
-  const { title, description, basePrice, location, country, category, cleaningFee, serviceFee } = req.body;
-  
   try {
+    const listingData = req.body.listing || {};
+    const title = listingData.title || { en: req.body.title || "" };
+    const description = listingData.description || { en: req.body.description || "" };
+    const amenities = listingData.amenities || { en: req.body.amenities || "" };
+    const houseRules = listingData.houseRules || { en: req.body.houseRules || "" };
+    const locationDescription = listingData.locationDescription || { en: req.body.locationDescription || "" };
+
+    const basePrice = Number(req.body.basePrice || req.body.price || listingData.price || 0);
+    const cleaningFee = Number(req.body.cleaningFee || listingData.cleaningFee || 0);
+    const serviceFee = Number(req.body.serviceFee || listingData.serviceFee || 0);
+    const location = req.body.location || listingData.location || "";
+    const country = req.body.country || listingData.country || "";
+    const category = req.body.category || listingData.category || "Beach";
+
+    // Auto-translate empty fields from English source
+    const targetLangs = ["hi", "fr", "es"];
+    
+    // Title translation
+    for (let lang of targetLangs) {
+      if (!title[lang] && title.en) {
+        title[lang] = await translateText(title.en, lang);
+      }
+    }
+    
+    // Description translation
+    for (let lang of targetLangs) {
+      if (!description[lang] && description.en) {
+        description[lang] = await translateText(description.en, lang);
+      }
+    }
+
+    // Amenities translation
+    for (let lang of targetLangs) {
+      if (!amenities[lang] && amenities.en) {
+        amenities[lang] = await translateText(amenities.en, lang);
+      }
+    }
+
+    // House Rules translation
+    for (let lang of targetLangs) {
+      if (!houseRules[lang] && houseRules.en) {
+        houseRules[lang] = await translateText(houseRules.en, lang);
+      }
+    }
+
+    // Location Description translation
+    for (let lang of targetLangs) {
+      if (!locationDescription[lang] && locationDescription.en) {
+        locationDescription[lang] = await translateText(locationDescription.en, lang);
+      }
+    }
+
     let coordinates = [77.2090, 28.6139]; // Default coordinates (Delhi)
     if (geocodingClient && location) {
       try {
@@ -157,10 +208,13 @@ module.exports.createListing = async (req, res, next) => {
     const newListing = new Listing({
       title,
       description,
-      price: Number(basePrice), // fallback EJS field
-      basePrice: Number(basePrice),
-      cleaningFee: Number(cleaningFee) || 0,
-      serviceFee: Number(serviceFee) || 0,
+      amenities,
+      houseRules,
+      locationDescription,
+      price: basePrice, // fallback EJS field
+      basePrice,
+      cleaningFee,
+      serviceFee,
       location,
       country,
       category,
@@ -186,20 +240,64 @@ module.exports.createListing = async (req, res, next) => {
 // 4. Update Listing
 module.exports.updateListing = async (req, res) => {
   const { id } = req.params;
-  const { title, description, basePrice, location, country, category, cleaningFee, serviceFee } = req.body;
   
   try {
-    const fieldsToUpdate = {
-      title,
-      description,
-      price: Number(basePrice), // fallback EJS
-      basePrice: Number(basePrice),
-      cleaningFee: Number(cleaningFee),
-      serviceFee: Number(serviceFee),
-      location,
-      country,
-      category
-    };
+    const listingData = req.body.listing || {};
+    const title = listingData.title || (req.body.title ? { en: req.body.title } : undefined);
+    const description = listingData.description || (req.body.description ? { en: req.body.description } : undefined);
+    const amenities = listingData.amenities || (req.body.amenities ? { en: req.body.amenities } : undefined);
+    const houseRules = listingData.houseRules || (req.body.houseRules ? { en: req.body.houseRules } : undefined);
+    const locationDescription = listingData.locationDescription || (req.body.locationDescription ? { en: req.body.locationDescription } : undefined);
+
+    const basePrice = req.body.basePrice !== undefined ? Number(req.body.basePrice) : (listingData.price !== undefined ? Number(listingData.price) : undefined);
+    const cleaningFee = req.body.cleaningFee !== undefined ? Number(req.body.cleaningFee) : (listingData.cleaningFee !== undefined ? Number(listingData.cleaningFee) : undefined);
+    const serviceFee = req.body.serviceFee !== undefined ? Number(req.body.serviceFee) : (listingData.serviceFee !== undefined ? Number(listingData.serviceFee) : undefined);
+    const location = req.body.location || listingData.location;
+    const country = req.body.country || listingData.country;
+    const category = req.body.category || listingData.category;
+
+    // Auto-translate empty language fields
+    const targetLangs = ["hi", "fr", "es"];
+    
+    if (title) {
+      for (let lang of targetLangs) {
+        if (!title[lang] && title.en) {
+          title[lang] = await translateText(title.en, lang);
+        }
+      }
+    }
+    
+    if (description) {
+      for (let lang of targetLangs) {
+        if (!description[lang] && description.en) {
+          description[lang] = await translateText(description.en, lang);
+        }
+      }
+    }
+
+    if (amenities) {
+      for (let lang of targetLangs) {
+        if (!amenities[lang] && amenities.en) {
+          amenities[lang] = await translateText(amenities.en, lang);
+        }
+      }
+    }
+
+    if (houseRules) {
+      for (let lang of targetLangs) {
+        if (!houseRules[lang] && houseRules.en) {
+          houseRules[lang] = await translateText(houseRules.en, lang);
+        }
+      }
+    }
+
+    if (locationDescription) {
+      for (let lang of targetLangs) {
+        if (!locationDescription[lang] && locationDescription.en) {
+          locationDescription[lang] = await translateText(locationDescription.en, lang);
+        }
+      }
+    }
 
     let updatedListing = await Listing.findById(id);
     if (!updatedListing) {
@@ -207,11 +305,21 @@ module.exports.updateListing = async (req, res) => {
     }
 
     // Apply updates
-    Object.keys(fieldsToUpdate).forEach(key => {
-      if (fieldsToUpdate[key] !== undefined) {
-        updatedListing[key] = fieldsToUpdate[key];
-      }
-    });
+    if (title) updatedListing.title = title;
+    if (description) updatedListing.description = description;
+    if (amenities) updatedListing.amenities = amenities;
+    if (houseRules) updatedListing.houseRules = houseRules;
+    if (locationDescription) updatedListing.locationDescription = locationDescription;
+
+    if (basePrice !== undefined) {
+      updatedListing.price = basePrice;
+      updatedListing.basePrice = basePrice;
+    }
+    if (cleaningFee !== undefined) updatedListing.cleaningFee = cleaningFee;
+    if (serviceFee !== undefined) updatedListing.serviceFee = serviceFee;
+    if (location) updatedListing.location = location;
+    if (country) updatedListing.country = country;
+    if (category) updatedListing.category = category;
 
     if (req.file) {
       updatedListing.image = {

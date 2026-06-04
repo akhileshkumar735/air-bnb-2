@@ -7,10 +7,35 @@ const Schema = mongoose.Schema;
 
 const listingSchema = new Schema({
   title: {
-    type: String,
-    required: true
+    en: { type: String, required: true },
+    hi: { type: String, default: "" },
+    fr: { type: String, default: "" },
+    es: { type: String, default: "" }
   },
-  description: String,
+  description: {
+    en: { type: String, required: true },
+    hi: { type: String, default: "" },
+    fr: { type: String, default: "" },
+    es: { type: String, default: "" }
+  },
+  amenities: {
+    en: { type: String, default: "" },
+    hi: { type: String, default: "" },
+    fr: { type: String, default: "" },
+    es: { type: String, default: "" }
+  },
+  houseRules: {
+    en: { type: String, default: "" },
+    hi: { type: String, default: "" },
+    fr: { type: String, default: "" },
+    es: { type: String, default: "" }
+  },
+  locationDescription: {
+    en: { type: String, default: "" },
+    hi: { type: String, default: "" },
+    fr: { type: String, default: "" },
+    es: { type: String, default: "" }
+  },
   image: { 
     filename: { type: String, default: null },
     url: { type: String, default: null },
@@ -67,7 +92,18 @@ const listingSchema = new Schema({
 }, { timestamps: true });
 
 // Optimize searching and filtering operations
-listingSchema.index({ title: "text", location: "text", country: "text" });
+listingSchema.index({ 
+  "title.en": "text", 
+  "title.hi": "text", 
+  "title.fr": "text", 
+  "title.es": "text",
+  "description.en": "text",
+  "description.hi": "text",
+  "description.fr": "text",
+  "description.es": "text",
+  location: "text", 
+  country: "text" 
+});
 listingSchema.index({ basePrice: 1 });
 listingSchema.index({ price: 1 });
 listingSchema.index({ category: 1 });

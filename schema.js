@@ -2,8 +2,36 @@ const joi = require("joi");
 
 module.exports.listingSchema = joi.object({
     listing: joi.object({
-      title: joi.string().required(),
-      description: joi.string().required(),
+      title: joi.object({
+        en: joi.string().required(),
+        hi: joi.string().allow("", null).optional(),
+        fr: joi.string().allow("", null).optional(),
+        es: joi.string().allow("", null).optional()
+      }).required(),
+      description: joi.object({
+        en: joi.string().required(),
+        hi: joi.string().allow("", null).optional(),
+        fr: joi.string().allow("", null).optional(),
+        es: joi.string().allow("", null).optional()
+      }).required(),
+      amenities: joi.object({
+        en: joi.string().allow("", null).optional(),
+        hi: joi.string().allow("", null).optional(),
+        fr: joi.string().allow("", null).optional(),
+        es: joi.string().allow("", null).optional()
+      }).optional(),
+      houseRules: joi.object({
+        en: joi.string().allow("", null).optional(),
+        hi: joi.string().allow("", null).optional(),
+        fr: joi.string().allow("", null).optional(),
+        es: joi.string().allow("", null).optional()
+      }).optional(),
+      locationDescription: joi.object({
+        en: joi.string().allow("", null).optional(),
+        hi: joi.string().allow("", null).optional(),
+        fr: joi.string().allow("", null).optional(),
+        es: joi.string().allow("", null).optional()
+      }).optional(),
       location: joi.string().required(),
       country: joi.string().required(),
       price: joi.number().required().min(0),

@@ -76,12 +76,53 @@ module.exports.isAdmin = (req, res, next) => {
 module.exports.validateListing = (req, res, next) => {
   if (!req.body.listing) {
     req.body.listing = {
-      title: req.body.title,
-      description: req.body.description,
+      title: {
+        en: req.body.titleEn || req.body.title_en || (req.body.title && typeof req.body.title === "object" ? req.body.title.en : req.body.title),
+        hi: req.body.titleHi || req.body.title_hi || (req.body.title && typeof req.body.title === "object" ? req.body.title.hi : ""),
+        fr: req.body.titleFr || req.body.title_fr || (req.body.title && typeof req.body.title === "object" ? req.body.title.fr : ""),
+        es: req.body.titleEs || req.body.title_es || (req.body.title && typeof req.body.title === "object" ? req.body.title.es : "")
+      },
+      description: {
+        en: req.body.descriptionEn || req.body.description_en || (req.body.description && typeof req.body.description === "object" ? req.body.description.en : req.body.description),
+        hi: req.body.descriptionHi || req.body.description_hi || (req.body.description && typeof req.body.description === "object" ? req.body.description.hi : ""),
+        fr: req.body.descriptionFr || req.body.description_fr || (req.body.description && typeof req.body.description === "object" ? req.body.description.fr : ""),
+        es: req.body.descriptionEs || req.body.description_es || (req.body.description && typeof req.body.description === "object" ? req.body.description.es : "")
+      },
+      amenities: {
+        en: req.body.amenitiesEn || req.body.amenities_en || (req.body.amenities && typeof req.body.amenities === "object" ? req.body.amenities.en : req.body.amenities || ""),
+        hi: req.body.amenitiesHi || req.body.amenities_hi || (req.body.amenities && typeof req.body.amenities === "object" ? req.body.amenities.hi : ""),
+        fr: req.body.amenitiesFr || req.body.amenities_fr || (req.body.amenities && typeof req.body.amenities === "object" ? req.body.amenities.fr : ""),
+        es: req.body.amenitiesEs || req.body.amenities_es || (req.body.amenities && typeof req.body.amenities === "object" ? req.body.amenities.es : "")
+      },
+      houseRules: {
+        en: req.body.houseRulesEn || req.body.houseRules_en || (req.body.houseRules && typeof req.body.houseRules === "object" ? req.body.houseRules.en : req.body.houseRules || ""),
+        hi: req.body.houseRulesHi || req.body.houseRules_hi || (req.body.houseRules && typeof req.body.houseRules === "object" ? req.body.houseRules.hi : ""),
+        fr: req.body.houseRulesFr || req.body.houseRules_fr || (req.body.houseRules && typeof req.body.houseRules === "object" ? req.body.houseRules.fr : ""),
+        es: req.body.houseRulesEs || req.body.houseRules_es || (req.body.houseRules && typeof req.body.houseRules === "object" ? req.body.houseRules.es : "")
+      },
+      locationDescription: {
+        en: req.body.locationDescriptionEn || req.body.locationDescription_en || (req.body.locationDescription && typeof req.body.locationDescription === "object" ? req.body.locationDescription.en : req.body.locationDescription || ""),
+        hi: req.body.locationDescriptionHi || req.body.locationDescription_hi || (req.body.locationDescription && typeof req.body.locationDescription === "object" ? req.body.locationDescription.hi : ""),
+        fr: req.body.locationDescriptionFr || req.body.locationDescription_fr || (req.body.locationDescription && typeof req.body.locationDescription === "object" ? req.body.locationDescription.fr : ""),
+        es: req.body.locationDescriptionEs || req.body.locationDescription_es || (req.body.locationDescription && typeof req.body.locationDescription === "object" ? req.body.locationDescription.es : "")
+      },
       location: req.body.location,
       country: req.body.country,
       price: Number(req.body.basePrice || req.body.price),
       image: req.body.image
+    };
+  } else {
+    const l = req.body.listing;
+    req.body.listing = {
+      title: typeof l.title === "string" ? { en: l.title } : l.title || {},
+      description: typeof l.description === "string" ? { en: l.description } : l.description || {},
+      amenities: typeof l.amenities === "string" ? { en: l.amenities } : l.amenities || {},
+      houseRules: typeof l.houseRules === "string" ? { en: l.houseRules } : l.houseRules || {},
+      locationDescription: typeof l.locationDescription === "string" ? { en: l.locationDescription } : l.locationDescription || {},
+      location: l.location,
+      country: l.country,
+      price: Number(l.basePrice || l.price),
+      image: l.image
     };
   }
   const payloadToValidate = {

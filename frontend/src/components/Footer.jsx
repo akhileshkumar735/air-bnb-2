@@ -1,47 +1,59 @@
 import React from "react";
 import { Globe, Heart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t, i18n } = useTranslation();
+
+  const getLanguageName = (code) => {
+    switch (code) {
+      case "hi": return "हिन्दी (Hindi)";
+      case "fr": return "Français (French)";
+      case "es": return "Español (Spanish)";
+      default: return "English (US)";
+    }
+  };
+
   return (
     <footer className="bg-slate-100 dark:bg-slate-950 border-t border-slate-200/60 dark:border-slate-800/40 text-slate-550 dark:text-slate-400 py-12 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
           <div className="space-y-4">
-            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">Support</h5>
+            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">{t("footer.support")}</h5>
             <ul className="space-y-2.5 text-xs font-medium">
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Help Center</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">AirCover</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Anti-discrimination</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Disability support</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Cancellation options</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.help_center")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.aircover")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.anti_discrimination")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.disability_support")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.cancellation_options")}</a></li>
             </ul>
           </div>
           
           <div className="space-y-4">
-            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">Hosting</h5>
+            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">{t("footer.hosting")}</h5>
             <ul className="space-y-2.5 text-xs font-medium">
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">AntiGravity your home</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">AirCover for Hosts</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Hosting resources</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Community forum</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Hosting responsibly</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.host_your_home")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.host_aircover")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.hosting_resources")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.community_forum")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.host_responsibly")}</a></li>
             </ul>
           </div>
           
           <div className="space-y-4">
-            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">AntiGravity</h5>
+            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">{t("footer.company")}</h5>
             <ul className="space-y-2.5 text-xs font-medium">
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Newsroom</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">New features</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Careers</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Investors</a></li>
-              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Gift cards</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.newsroom")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.new_features")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.careers")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.investors")}</a></li>
+              <li><a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.gift_cards")}</a></li>
             </ul>
           </div>
           
           <div className="space-y-4">
-            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">Socials</h5>
+            <h5 className="font-extrabold text-slate-900 dark:text-slate-200 tracking-tight text-sm uppercase">{t("footer.socials")}</h5>
             <div className="flex space-x-3 mb-4">
               <a 
                 href="#" 
@@ -74,7 +86,7 @@ export default function Footer() {
               </a>
             </div>
             <p className="text-[11px] text-slate-450 dark:text-slate-500 font-medium">
-              Made with <Heart className="h-3 w-3 inline fill-brand text-brand animate-pulse-slow" /> by the <span className="font-semibold text-slate-750 dark:text-slate-350">AntiGravity Team</span>.
+              {t("footer.made_with")} <Heart className="h-3 w-3 inline fill-brand text-brand animate-pulse-slow" /> {t("footer.by")} <span className="font-semibold text-slate-750 dark:text-slate-350">{t("footer.team")}</span>.
             </p>
           </div>
           
@@ -83,16 +95,16 @@ export default function Footer() {
         <hr className="my-8 border-slate-200/60 dark:border-slate-800/40" />
         
         <div className="flex flex-col md:flex-row items-center justify-between text-xs font-semibold tracking-wide uppercase text-slate-450 dark:text-slate-500">
-          <p>&copy; {new Date().getFullYear()} AntiGravity, Inc. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {t("footer.rights_reserved")}</p>
           <div className="flex space-x-4 mt-4 md:mt-0 items-center">
-            <a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Privacy</a>
+            <a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.privacy")}</a>
             <span className="text-slate-300 dark:text-slate-800">&middot;</span>
-            <a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Terms</a>
+            <a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.terms")}</a>
             <span className="text-slate-300 dark:text-slate-800">&middot;</span>
-            <a href="#" className="hover:text-brand dark:hover:text-brand-light transition">Sitemap</a>
+            <a href="#" className="hover:text-brand dark:hover:text-brand-light transition">{t("footer.sitemap")}</a>
             <span className="text-slate-300 dark:text-slate-800">&middot;</span>
-            <div className="flex items-center hover:text-brand dark:hover:text-brand-light cursor-pointer transition normal-case font-medium">
-              <Globe className="h-3.5 w-3.5 mr-1" /> English (US)
+            <div className="flex items-center hover:text-brand dark:hover:text-brand-light transition normal-case font-medium">
+              <Globe className="h-3.5 w-3.5 mr-1" /> {getLanguageName(i18n.language)}
             </div>
           </div>
         </div>

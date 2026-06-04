@@ -87,9 +87,42 @@ async function seedDB() {
       const category = categories[i % categories.length];
       const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
       const noun = nouns[Math.floor(Math.random() * nouns.length)];
-      const title = `${adjective} ${category} ${noun} in ${loc.name}`;
+      const titleText = `${adjective} ${category} ${noun} in ${loc.name}`;
+      const title = {
+        en: titleText,
+        hi: `शानदार ${category} ${noun} (${loc.name})`,
+        fr: `${category} de luxe ${noun} à ${loc.name}`,
+        es: `Hermoso ${category} ${noun} en ${loc.name}`
+      };
       
-      const description = `Welcome to this gorgeous ${adjective.toLowerCase()} ${category.toLowerCase()} ${noun.toLowerCase()} located in the heart of ${loc.name}. Features top-tier amenities, comfortable beds, fast Wi-Fi, and a stunning view of local sights. Ideal for solo travelers, couples, and families looking for a premium experience.`;
+      const descriptionText = `Welcome to this gorgeous ${adjective.toLowerCase()} ${category.toLowerCase()} ${noun.toLowerCase()} located in the heart of ${loc.name}. Features top-tier amenities, comfortable beds, fast Wi-Fi, and a stunning view of local sights. Ideal for solo travelers, couples, and families looking for a premium experience.`;
+      const description = {
+        en: descriptionText,
+        hi: `${loc.name} के केंद्र में स्थित इस शानदार ${adjective.toLowerCase()} ${category.toLowerCase()} ${noun.toLowerCase()} में आपका स्वागत है। इसमें शीर्ष स्तर की सुविधाएं, आरामदायक बिस्तर, तेज़ वाई-फाई और स्थानीय दृश्यों का शानदार दृश्य है।`,
+        fr: `Bienvenue dans ce magnifique ${noun.toLowerCase()} ${category.toLowerCase()} ${adjective.toLowerCase()} situé au cœur de ${loc.name}. Comprend des équipements de premier ordre, des lits confortables, une connexion Wi-Fi rapide et une vue imprenable sur les sites locaux.`,
+        es: `Bienvenido a este magnífico ${noun.toLowerCase()} ${category.toLowerCase()} ${adjective.toLowerCase()} ubicado en el corazón de ${loc.name}. Cuenta con comodidades de primer nivel, camas cómodas, Wi-Fi rápido y una vista impresionante de los lugares de interés de la zona.`
+      };
+
+      const amenities = {
+        en: "Wifi, Pool, Kitchen, Air conditioning, Free parking",
+        hi: "वाईफाई, स्विमिंग पूल, रसोई, एयर कंडीशनिंग, मुफ्त पार्किंग",
+        fr: "Wifi, Piscine, Cuisine, Climatisation, Parking gratuit",
+        es: "Wifi, Piscina, Cocina, Aire acondicionado, Aparcamiento gratuito"
+      };
+
+      const houseRules = {
+        en: "Check-in after 3 PM. No smoking. No parties.",
+        hi: "दोपहर 3 बजे के बाद चेक-इन। धूम्रपान निषेध। कोई पार्टी नहीं।",
+        fr: "Arrivée après 15h. Non fumeur. Pas de fêtes.",
+        es: "Llegada después de las 3 PM. No fumar. No fiestas."
+      };
+
+      const locationDescription = {
+        en: "Situated in a safe, vibrant neighborhood close to local cafes and restaurants.",
+        hi: "स्थानीय कैफे और रेस्तरां के करीब एक सुरक्षित, जीवंत पड़ोस में स्थित है।",
+        fr: "Situé dans un quartier sûr et animé à proximité des cafés et restaurants locaux.",
+        es: "Situado en un barrio seguro y vibrante cerca de cafeterías y restaurantes locales."
+      };
       
       const imgUrl = sampleImages[i % sampleImages.length];
       const basePrice = Math.floor(Math.random() * 8000) + 1500; // between 1500 and 9500
@@ -100,6 +133,9 @@ async function seedDB() {
       const listing = new Listing({
         title,
         description,
+        amenities,
+        houseRules,
+        locationDescription,
         image: {
           filename: `listing_img_${i}`,
           url: imgUrl

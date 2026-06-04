@@ -5,8 +5,16 @@ import PropertyCard from "../components/PropertyCard";
 import EmptyState from "../components/EmptyState";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTax } from "../context/TaxContext";
+import { useTranslation } from "react-i18next";
+import { useSEO } from "../hooks/useSEO";
 
 export default function Home({ searchParams, onClearSearch, onSelectListing }) {
+  const { t, i18n } = useTranslation();
+  useSEO({
+    title: t("home.title"),
+    description: t("home.subtitle"),
+    pathname: "/"
+  });
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("");
@@ -65,6 +73,9 @@ export default function Home({ searchParams, onClearSearch, onSelectListing }) {
         const lat = coords[1];
         const lng = coords[0];
 
+        const currentLang = i18n.language || "en";
+        const titleVal = listing.title?.[currentLang] || listing.title?.en || listing.title || "";
+
         const price = showTax ? Math.round(listing.basePrice * 1.18) : listing.basePrice;
         const priceHtml = `<div class="price-marker-pill">&#8377;${price.toLocaleString()}</div>`;
         
@@ -80,8 +91,8 @@ export default function Home({ searchParams, onClearSearch, onSelectListing }) {
 
         const popupContent = `
           <div style="font-family: var(--font-sans); width: 180px; text-align: left; cursor: pointer;" onclick="window.handleMapListingClick('${listing._id}')">
-            <img src="${listing.image?.url || 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=300'}" alt="${listing.title}" style="height: 100px; width: 100%; object-fit: cover; border-radius: 12px; margin-bottom: 8px;" />
-            <h4 style="margin: 0 0 2px 0; font-weight: 800; font-size: 12px; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${listing.title}</h4>
+            <img src="${listing.image?.url || 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=300'}" alt="${titleVal}" style="height: 100px; width: 100%; object-fit: cover; border-radius: 12px; margin-bottom: 8px;" />
+            <h4 style="margin: 0 0 2px 0; font-weight: 800; font-size: 12px; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${titleVal}</h4>
             <p style="margin: 0; font-size: 10px; font-weight: 650; color: #64748b;">${listing.location}, ${listing.country}</p>
             <div style="display: flex; align-items: center; margin-top: 6px; margin-bottom: 6px;">
               <span style="font-weight: 800; font-size: 12.5px; color: #ff385c;">&#8377; ${price.toLocaleString()}</span>
@@ -209,8 +220,8 @@ export default function Home({ searchParams, onClearSearch, onSelectListing }) {
                 >
                   <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                 </button>
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Page {page} of {totalPages}
+                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {t("home.page_info", { page, totalPages })}
                 </span>
                 <button
                   disabled={page === totalPages}
@@ -233,14 +244,14 @@ export default function Home({ searchParams, onClearSearch, onSelectListing }) {
         >
           {showMapView ? (
             <>
-              <span>Show List</span>
+              <span>{t("home.show_list")}</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-brand">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
               </svg>
             </>
           ) : (
             <>
-              <span>Show Map</span>
+              <span>{t("home.show_map")}</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-brand">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8m-6-1.5h.008v.008H9v-.008zm6-3h.008v.008H15v-.008zm6-3h.008v.008H21V6.25zm0 6h.008v.008H21v-.008zm-18-6h.008v.008H3V6.25zm0 6h.008v.008H3v-.008zm0 6h.008v.008H3v-.008z" />
               </svg>

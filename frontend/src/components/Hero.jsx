@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Search, MapPin, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Hero({ onSearch }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [guests, setGuests] = useState(1);
 
@@ -26,13 +28,13 @@ export default function Hero({ onSearch }) {
         {/* Immersive typography headings */}
         <div className="space-y-3">
           <span className="inline-block text-[11px] md:text-xs font-extrabold uppercase tracking-widest bg-brand text-white px-3 py-1 rounded-full shadow-sm hover:scale-105 transition-transform">
-            Next-Gen Luxury Rentals
+            {t("home.next_gen")}
           </span>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight drop-shadow-md leading-tight">
-            Experience <span className="bg-gradient-to-r from-brand via-pink-400 to-indigo-400 bg-clip-text text-transparent">Wonderlust</span> Stays
+            {t("home.title")}
           </h1>
           <p className="text-sm sm:text-base md:text-lg drop-shadow-sm text-slate-200/90 max-w-xl mx-auto font-medium tracking-wide">
-            Discover handpicked gravity-defying architecture, floating pools, and luxury spaces across the cosmos.
+            {t("home.subtitle")}
           </p>
         </div>
 
@@ -45,10 +47,10 @@ export default function Hero({ onSearch }) {
           <div className="flex-1 flex items-center px-4 py-2 border-b md:border-b-0 md:border-r border-slate-200/50 dark:border-slate-800/65 group">
             <MapPin className="h-5 w-5 text-brand group-focus-within:scale-110 transition-transform mr-3 shrink-0" />
             <div className="flex-grow flex flex-col text-left">
-              <label className="text-[9px] uppercase font-extrabold tracking-wider text-slate-400 dark:text-slate-500">Destination</label>
+              <label className="text-[9px] uppercase font-extrabold tracking-wider text-slate-400 dark:text-slate-500">{t("home.destination")}</label>
               <input 
                 type="text" 
-                placeholder="Where are you going? (e.g. Udaipur)" 
+                placeholder={t("home.destination_placeholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="bg-transparent border-none outline-none w-full text-slate-850 dark:text-white placeholder-slate-400 text-xs font-bold mt-0.5"
@@ -60,16 +62,16 @@ export default function Hero({ onSearch }) {
           <div className="flex items-center px-4 py-2 md:w-44 border-b md:border-b-0 md:border-r border-slate-200/50 dark:border-slate-800/65 group">
             <Users className="h-5 w-5 text-brand group-focus-within:scale-110 transition-transform mr-3 shrink-0" />
             <div className="flex-grow flex flex-col text-left">
-              <label className="text-[9px] uppercase font-extrabold tracking-wider text-slate-400 dark:text-slate-500">Guests</label>
+              <label className="text-[9px] uppercase font-extrabold tracking-wider text-slate-400 dark:text-slate-500">{t("home.guests")}</label>
               <select 
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
                 className="bg-transparent border-none outline-none w-full text-slate-850 dark:text-white text-xs font-bold mt-0.5 cursor-pointer"
               >
-                <option value={1} className="dark:bg-slate-900">1 Guest</option>
-                <option value={2} className="dark:bg-slate-900">2 Guests</option>
-                <option value={3} className="dark:bg-slate-900">3 Guests</option>
-                <option value={4} className="dark:bg-slate-900">4+ Guests</option>
+                <option value={1} className="dark:bg-slate-900">1 {t("detail.review")}</option> {/* fallback review as singular visitor/guest */}
+                <option value={2} className="dark:bg-slate-900">2 {t("home.guests")}</option>
+                <option value={3} className="dark:bg-slate-900">3 {t("home.guests")}</option>
+                <option value={4} className="dark:bg-slate-900">4+ {t("home.guests")}</option>
               </select>
             </div>
           </div>
@@ -79,7 +81,7 @@ export default function Hero({ onSearch }) {
             type="submit" 
             className="w-full md:w-auto px-7 py-3.5 bg-gradient-to-r from-brand to-pink-650 hover:from-brand-dark hover:to-pink-700 text-white rounded-full flex items-center justify-center font-bold text-xs uppercase tracking-wider shadow-lg hover:shadow-brand/20 dark:hover:shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
           >
-            <Search className="h-4.5 w-4.5 mr-2" /> Search Stays
+            <Search className="h-4.5 w-4.5 mr-2" /> {t("home.search_stays")}
           </button>
         </form>
 
