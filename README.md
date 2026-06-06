@@ -1,9 +1,3 @@
-# AntiGravity - Production-Ready MERN Airbnb Clone
-
-AntiGravity is a fully responsive, highly secure, and performance-optimized Airbnb Clone built on the modern MERN Stack (MongoDB, Express, React, Node). This project implements dynamic nightly pricing, overlapping booking calendar validations, search indexing, Redis caching, multi-stage Docker builds, and complete API/component test suites.
-
----
-
 ## 1. Project Architecture
 
 The application is restructured to follow clean architectural decoupling:
